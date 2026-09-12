@@ -1,0 +1,10 @@
+.build/
+dist/
+.DS_Store
+*.xcuserstate
+.swiftpm/
+DerivedData/
+*.log
+
+# Local release archives are generated artifacts.
+Releases/
