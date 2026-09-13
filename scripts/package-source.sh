@@ -16,7 +16,7 @@ cleanup() {
 trap cleanup EXIT INT TERM HUP
 
 APP_VERSION="$(/usr/bin/plutil -extract CFBundleShortVersionString raw -o - "${INFO_PLIST}")"
-ARCHIVE_BASENAME="Launch-${APP_VERSION}-source"
+ARCHIVE_BASENAME="启动台-${APP_VERSION}-source"
 OUTPUT_ARCHIVE="${PROJECT_DIRECTORY}/dist/${ARCHIVE_BASENAME}.zip"
 
 WORK_DIRECTORY="$(mktemp -d /private/tmp/Launch-source.XXXXXX)"
@@ -27,7 +27,8 @@ mkdir -p "${STAGING_DIRECTORY}" "${PROJECT_DIRECTORY}/dist"
 /usr/bin/rsync -a \
     --exclude '.build/' \
     --exclude 'dist/' \
-    --exclude '.git/' \
+    --exclude 'Releases/' \
+    --exclude '.git' \
     --exclude '.DS_Store' \
     --exclude '.swiftpm/' \
     --exclude 'DerivedData/' \

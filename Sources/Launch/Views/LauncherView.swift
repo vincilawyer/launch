@@ -4540,7 +4540,7 @@ private struct LauncherEmptyView: View {
             Text(
                 isSearching
                     ? LaunchText.value("请尝试其他应用名称。", "Try a different application name.")
-                    : LaunchText.value("重新扫描后，Launch 会自动添加应用。", "Launch will add applications after a new scan.")
+                    : LaunchText.value("重新扫描后，启动台会自动添加应用。", "启动台 will add applications after a new scan.")
             )
             .font(.callout)
             .foregroundStyle(.white.opacity(0.62))

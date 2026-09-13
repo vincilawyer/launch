@@ -427,9 +427,9 @@ struct LauncherHideBadge: View {
             .shadow(color: .black.opacity(0.34), radius: 6, y: 2)
         }
         .buttonStyle(.plain)
-        .help(LaunchText.value("从 Launch 中隐藏", "Hide from Launch"))
+        .help(LaunchText.value("从启动台中隐藏", "Hide from 启动台"))
         .accessibilityLabel(
-            LaunchText.value("从 Launch 中隐藏应用", "Hide application from Launch")
+            LaunchText.value("从启动台中隐藏应用", "Hide application from 启动台")
         )
     }
 }

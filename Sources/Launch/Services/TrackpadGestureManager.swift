@@ -1170,7 +1170,7 @@ enum RawTouchContactDecoder {
             let record = rawTouches.advanced(by: index * 96)
             return RawTouchRecord(
                 state: record.load(fromByteOffset: 0x14, as: UInt32.self),
-                // 9450.2's callback record is the 96-byte path-frame record:
+                // The verified callback ABIs use the 96-byte path-frame record:
                 // identifier is +0x10, state +0x14, normalized x/y +0x20/+0x24
                 // and total capacitance +0x30. +0x18 is a reserved/auxiliary
                 // field that is commonly identical across every contact; using
@@ -1724,6 +1724,55 @@ struct RawFiveFingerHealth: Equatable, Sendable {
     }
 }
 
+/// Private record layouts are approved per OS family, framework and CPU.
+/// Keep this decision independent of hardware startup so upgrades that disable
+/// global gestures can be covered by regression checks and explained in Settings.
+struct RawMultitouchCompatibility {
+    let macOSMajorVersion: Int
+    let frameworkVersion: String?
+    let architecture: String
+
+    var isVerified: Bool {
+        guard macOSMajorVersion == 26 else { return false }
+        switch (frameworkVersion, architecture) {
+        case ("9450.2", "arm64"), ("9450.2", "x86_64"):
+            return true
+        // macOS 26.6.2 / 25G83: callback registers, 96-byte record stride and
+        // decoder field offsets checked against the installed arm64 image.
+        // See docs/multitouch-compatibility.md for evidence and test limits.
+        case ("9460.1", "arm64"):
+            return true
+        default:
+            return false
+        }
+    }
+
+    static let current: Self = {
+        let path = "/System/Library/PrivateFrameworks/MultitouchSupport.framework/Resources/Info.plist"
+        let version: String?
+        if let data = FileManager.default.contents(atPath: path),
+           let plist = try? PropertyListSerialization.propertyList(
+               from: data, options: [], format: nil
+           ) as? [String: Any] {
+            version = plist["CFBundleVersion"] as? String
+        } else {
+            version = nil
+        }
+        #if arch(arm64)
+        let architecture = "arm64"
+        #elseif arch(x86_64)
+        let architecture = "x86_64"
+        #else
+        let architecture = "unknown"
+        #endif
+        return Self(
+            macOSMajorVersion: ProcessInfo.processInfo.operatingSystemVersion.majorVersion,
+            frameworkVersion: version,
+            architecture: architecture
+        )
+    }()
+}
+
 /// Dynamically loads the system multitouch bridge only for the ABI verified on
 /// this Mac. Unknown versions fail closed, leaving keyboard shortcuts intact.
 private final class RawMultitouchBridge: @unchecked Sendable {
@@ -1742,9 +1791,6 @@ private final class RawMultitouchBridge: @unchecked Sendable {
 
     private static let frameworkPath =
         "/System/Library/PrivateFrameworks/MultitouchSupport.framework/MultitouchSupport"
-    private static let infoPlistPath =
-        "/System/Library/PrivateFrameworks/MultitouchSupport.framework/Resources/Info.plist"
-    private static let verifiedFrameworkVersions: Set<String> = ["9450.2"]
 
     private let library: UnsafeMutableRawPointer
     private let device: DeviceRef
@@ -1756,9 +1802,10 @@ private final class RawMultitouchBridge: @unchecked Sendable {
     private var isStopped = false
 
     init?(onAction: @escaping @Sendable (RawGestureAction) -> Void) {
-        guard Self.hasVerifiedABI else {
+        let compatibility = RawMultitouchCompatibility.current
+        guard compatibility.isVerified else {
             LaunchGestureDiagnostics.log(
-                "raw unavailable: os=\(ProcessInfo.processInfo.operatingSystemVersionString) framework=\(Self.frameworkVersion ?? "unknown")"
+                "raw unavailable: os=\(ProcessInfo.processInfo.operatingSystemVersionString) framework=\(compatibility.frameworkVersion ?? "unknown") architecture=\(compatibility.architecture)"
             )
             return nil
         }
@@ -1824,7 +1871,7 @@ private final class RawMultitouchBridge: @unchecked Sendable {
         self.stopDevice = stop
         self.releaseDevice = release
         LaunchGestureDiagnostics.log(
-            "raw active: framework=\(Self.frameworkVersion ?? "unknown") device-start=0"
+            "raw active: framework=\(compatibility.frameworkVersion ?? "unknown") device-start=0"
         )
     }
 
@@ -1843,27 +1890,6 @@ private final class RawMultitouchBridge: @unchecked Sendable {
         // Intentionally retain the small callback context and dynamic image
         // until process exit. The private API does not document MTDeviceStop as
         // a callback barrier, so releasing either here could create a UAF.
-    }
-
-    private static var hasVerifiedABI: Bool {
-        guard ProcessInfo.processInfo.operatingSystemVersion.majorVersion == 26,
-              let version = frameworkVersion else {
-            return false
-        }
-        return verifiedFrameworkVersions.contains(version)
-    }
-
-    private static var frameworkVersion: String? {
-        guard let data = FileManager.default.contents(atPath: infoPlistPath),
-              let plist = try? PropertyListSerialization.propertyList(
-                from: data,
-                options: [],
-                format: nil
-              ) as? [String: Any],
-              let version = plist["CFBundleVersion"] as? String else {
-            return nil
-        }
-        return version
     }
 
     private static let frameCallback: FrameCallback = {

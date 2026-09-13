@@ -74,12 +74,12 @@ struct LauncherSettingsContent: View {
                     systemImage: "gearshape"
                 ) {
                     LauncherSettingsRow(
-                        title: LaunchText.value("登录时自动打开 Launch", "Open Launch automatically at login"),
+                        title: LaunchText.value("登录时自动打开启动台", "Open 启动台 automatically at login"),
                         subtitle: loginItemAvailable
                             ? nil
                             : LaunchText.value(
                                 "登录项功能仅在打包后的应用中可用。",
-                                "Available in the packaged Launch application."
+                                "Available in the packaged 启动台 application."
                             )
                     ) {
                         Toggle(
@@ -121,8 +121,8 @@ struct LauncherSettingsContent: View {
                     LauncherSettingsRow(
                         title: LaunchText.value("显示菜单栏图标", "Show menu bar icon"),
                         subtitle: LaunchText.value(
-                            "关闭后仍可使用全局快捷键或从“应用程序”文件夹打开 Launch。",
-                            "When off, use the global shortcut or open Launch from Applications."
+                            "关闭后仍可使用全局快捷键或从“应用程序”文件夹打开启动台。",
+                            "When off, use the global shortcut or open 启动台 from Applications."
                         )
                     ) {
                         Toggle("", isOn: $preferences.showMenuBarIcon)
@@ -134,8 +134,8 @@ struct LauncherSettingsContent: View {
                     LauncherSettingsRow(
                         title: LaunchText.value("管理应用", "Manage applications"),
                         subtitle: LaunchText.value(
-                            "在一个列表中选择哪些应用显示在 Launch 中。",
-                            "Choose which applications appear in Launch from one list."
+                            "在一个列表中选择哪些应用显示在启动台中。",
+                            "Choose which applications appear in 启动台 from one list."
                         )
                     ) {
                         HStack(spacing: 7) {
@@ -177,7 +177,7 @@ struct LauncherSettingsContent: View {
                     LauncherSettingsDivider()
                     LauncherShortcutRow(keys: ["↩"], action: LaunchText.value("打开所选项目", "Open selected item"))
                     LauncherSettingsDivider()
-                    LauncherShortcutRow(keys: ["Esc"], action: LaunchText.value("关闭文件夹或 Launch", "Close folder or Launch"))
+                    LauncherShortcutRow(keys: ["Esc"], action: LaunchText.value("关闭文件夹或启动台", "Close folder or 启动台"))
                 }
 
                 LauncherSettingsSection(
@@ -186,12 +186,12 @@ struct LauncherSettingsContent: View {
                 ) {
                     LauncherShortcutRow(
                         keys: [LaunchText.value("五指", "5 fingers"), LaunchText.value("捏合", "Pinch")],
-                        action: LaunchText.value("显示 Launch", "Show Launch")
+                        action: LaunchText.value("显示启动台", "Show 启动台")
                     )
                     LauncherSettingsDivider()
                     LauncherShortcutRow(
                         keys: [LaunchText.value("五指", "5 fingers"), LaunchText.value("张开", "Spread")],
-                        action: LaunchText.value("隐藏 Launch", "Hide Launch")
+                        action: LaunchText.value("隐藏启动台", "Hide 启动台")
                     )
                     LauncherSettingsDivider()
                     LauncherShortcutRow(
@@ -201,12 +201,22 @@ struct LauncherSettingsContent: View {
                     LauncherSettingsDivider()
                     LauncherSettingsNotice(
                         text: LaunchText.value(
-                            "Launch 打开时，二指横向滑动会让页面跟随手势移动；三指手势继续交给 macOS。五指手势暂不可用时，可使用你在上方设置的全局快捷键。",
-                            "While Launch is open, a two-finger horizontal swipe moves pages with your gesture; three-finger gestures remain available to macOS. If five-finger gestures are unavailable, use the global shortcut configured above."
+                            "启动台打开时，二指横向滑动会让页面跟随手势移动；三指手势继续交给 macOS。五指手势暂不可用时，可使用你在上方设置的全局快捷键。",
+                            "While 启动台 is open, a two-finger horizontal swipe moves pages with your gesture; three-finger gestures remain available to macOS. If five-finger gestures are unavailable, use the global shortcut configured above."
                         ),
                         systemImage: "info.circle",
                         tint: .secondary
                     )
+                    if !RawMultitouchCompatibility.current.isVerified {
+                        LauncherSettingsNotice(
+                            text: LaunchText.value(
+                                "当前系统版本尚未适配全局五指手势。请使用全局快捷键或菜单栏图标打开启动台。",
+                                "Global five-finger gestures have not been verified for this system version. Open 启动台 using the global shortcut or menu bar icon."
+                            ),
+                            systemImage: "exclamationmark.triangle",
+                            tint: .orange
+                        )
+                    }
                 }
 
             }
@@ -216,7 +226,7 @@ struct LauncherSettingsContent: View {
             .frame(maxWidth: .infinity)
         }
         .background(Color(nsColor: .windowBackgroundColor))
-        .navigationTitle(LaunchText.value("Launch 设置", "Launch Settings"))
+        .navigationTitle(LaunchText.value("启动台设置", "启动台 Settings"))
         .onChange(of: preferences) { _, _ in
             save()
         }
@@ -460,7 +470,7 @@ private struct LauncherManagedApplicationRow: View {
                     .lineLimit(1)
                 Text(
                     isVisible
-                        ? LaunchText.value("在 Launch 中显示", "Shown in Launch")
+                        ? LaunchText.value("在启动台中显示", "Shown in 启动台")
                         : LaunchText.value("已隐藏", "Hidden")
                 )
                 .font(.caption)
@@ -478,8 +488,8 @@ private struct LauncherManagedApplicationRow: View {
             .toggleStyle(.switch)
             .accessibilityLabel(
                 LaunchText.value(
-                    "在 Launch 中显示 \(application.name)",
-                    "Show \(application.name) in Launch"
+                    "在启动台中显示 \(application.name)",
+                    "Show \(application.name) in 启动台"
                 )
             )
         }

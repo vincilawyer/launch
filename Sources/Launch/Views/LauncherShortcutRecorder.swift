@@ -14,7 +14,7 @@ struct LauncherGlobalShortcutEditor: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 14) {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(LaunchText.value("显示或隐藏 Launch", "Show or hide Launch"))
+                    Text(LaunchText.value("显示或隐藏启动台", "Show or hide 启动台"))
                         .font(.body)
                     Text(
                         shortcut.enabled
@@ -23,8 +23,8 @@ struct LauncherGlobalShortcutEditor: View {
                                 "Press this shortcut from any application."
                             )
                             : LaunchText.value(
-                                "全局快捷键已停用，仍可从菜单栏或应用程序文件夹打开 Launch。",
-                                "The global shortcut is off. You can still open Launch from the menu bar or Applications folder."
+                                "全局快捷键已停用，仍可从菜单栏或应用程序文件夹打开启动台。",
+                                "The global shortcut is off. You can still open 启动台 from the menu bar or Applications folder."
                             )
                     )
                     .font(.caption)

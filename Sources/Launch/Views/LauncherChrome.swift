@@ -135,7 +135,7 @@ struct LauncherTopBar: View {
                     }
                     .buttonStyle(.plain)
                     .help(LaunchText.value("设置", "Settings"))
-                    .accessibilityLabel(LaunchText.value("打开 Launch 设置", "Open Launch settings"))
+                    .accessibilityLabel(LaunchText.value("打开启动台设置", "Open 启动台 settings"))
                     .transition(.opacity.combined(with: .scale(scale: 0.92)))
                 }
                 // The search field, not the combined search/settings group,

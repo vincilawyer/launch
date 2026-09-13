@@ -15,6 +15,7 @@ private func requireGesture(
 @main
 private enum GestureChecks {
     static func main() throws {
+        try rawCompatibilityRejectsUnverifiedSystems()
         try threeFingerSwipeNeverPaginates()
         try rawThreeFingerFramesNeverPaginate()
         try primaryButtonBlocksLocalSequenceUntilAllUp()
@@ -73,7 +74,33 @@ private enum GestureChecks {
         try inactiveGestureEndsWithLatestMotion()
         try inactiveGestureCancelsWhenInteractivityIsLost()
         try inactivityTrackerRejectsStaleSequences()
-        print("Launch gesture checks passed (58/58)")
+        print("Launch gesture checks passed (59/59)")
+    }
+
+    private static func rawCompatibilityRejectsUnverifiedSystems() throws {
+        func supported(_ os: Int, _ framework: String?, _ cpu: String) -> Bool {
+            RawMultitouchCompatibility(
+                macOSMajorVersion: os, frameworkVersion: framework, architecture: cpu
+            ).isVerified
+        }
+        try requireGesture(
+            supported(26, "9450.2", "arm64")
+                && supported(26, "9450.2", "x86_64"),
+            "The previously verified multitouch ABI lost support"
+        )
+        try requireGesture(
+            supported(26, "9460.1", "arm64"),
+            "macOS 26.6.2 disabled the compatible 9460.1 arm64 touch bridge"
+        )
+        try requireGesture(
+            !supported(26, "9460.1", "x86_64")
+                && !supported(26, "9460.2", "arm64")
+                && !supported(27, "9460.1", "arm64")
+                && !supported(25, "9450.2", "arm64")
+                && !supported(26, nil, "arm64")
+                && !supported(26, "9450.2", "unknown"),
+            "An unverified framework, OS or CPU enabled private touch decoding"
+        )
     }
 
     private static func threeFingerSwipeNeverPaginates() throws {

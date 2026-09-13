@@ -483,8 +483,8 @@ final class LauncherModel: ObservableObject {
         guard canUninstall(applicationID),
               let application = applications[applicationID] else {
             errorMessage = LaunchText.value(
-                "这个应用受系统保护，无法从 Launch 卸载。",
-                "This application is protected and cannot be removed from Launch."
+                "这个应用受系统保护，无法从启动台卸载。",
+                "This application is protected and cannot be removed from 启动台."
             )
             return
         }

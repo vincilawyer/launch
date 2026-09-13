@@ -155,3 +155,13 @@ source. Do not commit them. Release archives are produced by scripts after all
 checks pass. The current local build is ad-hoc signed; public binary distribution
 requires the maintainer's Developer ID signing and Apple notarization. The
 private MultitouchSupport path is not suitable for Mac App Store submission.
+
+## 本项目版本管理与命名
+
+- 产品与桌面项目名为“启动台”。Swift target / executable `Launch`、Bundle ID
+  `com.vinci.Launch` 与 `~/Library/Application Support/Launch` 保持稳定，避免丢失布局和偏好。
+- 每个独立源码修改使用独立任务分支和 Worktree；修改前保存可恢复起点，保留无关修改与暂存安排。
+- 按风险完成构建和验证后，用中文提交本任务源码；生成物、真实密钥、用户数据与业务数据库不入库。
+- 恢复旧版优先创建恢复分支或 Worktree，不重写共享历史，不丢弃未提交改动。
+- GitHub 默认为私有仓库偏好；首次上传仍须确认具体账户、仓库和项目授权。有持续授权后正常推送。
+- 交付时简述分支、提交标识、验证结果与远程同步状态；本地提交不称为云端备份。

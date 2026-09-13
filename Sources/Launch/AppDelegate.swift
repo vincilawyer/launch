@@ -178,8 +178,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         toggleMenuItem?.title = launcherWindowController?.isPresented == true
-            ? LaunchText.value("隐藏 Launch", "Hide Launch")
-            : LaunchText.value("显示 Launch", "Show Launch")
+            ? LaunchText.value("隐藏启动台", "Hide 启动台")
+            : LaunchText.value("显示启动台", "Show 启动台")
         scanMenuItem?.title = model?.isScanning == true
             ? LaunchText.value("正在扫描应用…", "Scanning Applications…")
             : LaunchText.value("重新扫描应用", "Scan Applications Again")
@@ -288,17 +288,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let button = statusItem.button {
             button.image = NSImage(
                 systemSymbolName: "square.grid.3x3.fill",
-                accessibilityDescription: "Launch"
+                accessibilityDescription: "启动台"
             )
             button.image?.isTemplate = true
-            button.toolTip = "Launch"
+            button.toolTip = "启动台"
         }
 
-        let menu = NSMenu(title: "Launch")
+        let menu = NSMenu(title: "启动台")
         menu.delegate = self
 
         let toggleItem = NSMenuItem(
-            title: LaunchText.value("显示 Launch", "Show Launch"),
+            title: LaunchText.value("显示启动台", "Show 启动台"),
             action: #selector(toggleLauncher(_:)),
             keyEquivalent: ""
         )
@@ -339,7 +339,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(.separator())
 
         let quitItem = NSMenuItem(
-            title: LaunchText.value("退出 Launch", "Quit Launch"),
+            title: LaunchText.value("退出启动台", "Quit 启动台"),
             action: #selector(quit(_:)),
             keyEquivalent: "q"
         )
@@ -422,7 +422,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         switch result {
         case let .success(applied):
             appliedShortcut = applied
-            statusItem?.button?.toolTip = "Launch"
+            statusItem?.button?.toolTip = "启动台"
         case let .failure(error):
             if let rollback = ShellShortcutRollbackRequest.make(
                 failedDescriptor: normalized,
@@ -464,7 +464,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 )
             }
             model.reportShellError(message)
-            statusItem?.button?.toolTip = "Launch — \(message)"
+            statusItem?.button?.toolTip = "启动台 — \(message)"
         }
     }
 

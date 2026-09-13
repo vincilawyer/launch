@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Launch",
+    name: "启动台",
     platforms: [
         .macOS(.v14)
     ],

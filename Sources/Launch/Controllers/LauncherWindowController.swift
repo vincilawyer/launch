@@ -398,7 +398,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
             backing: .buffered,
             defer: false
         )
-        window.title = LaunchText.value("Launch 设置", "Launch Settings")
+        window.title = LaunchText.value("启动台设置", "启动台 Settings")
         window.titlebarAppearsTransparent = true
         window.isReleasedWhenClosed = false
         window.minSize = NSSize(width: 540, height: 480)
